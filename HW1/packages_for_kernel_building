@@ -1,0 +1,9 @@
+wget
+gcc
+ncurses-devel
+bison
+flex
+elfutils-libelf-devel
+bc
+openssl-devel
+perl
