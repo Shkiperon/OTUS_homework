@@ -1,0 +1,118 @@
+Script started on Sun May 13 17:07:36 2018
+]0;vagrant@otuslinux:~[?1034h[vagrant@otuslinux ~]$ du -hT
+du: invalid option -- 'T'
+Try 'du --help' for more information.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ du -hT[1P[1@f
+Filesystem                      Type      Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup00-LogVol00 xfs       8.0G  2.3G  5.8G  28% /
+devtmpfs                        devtmpfs  488M     0  488M   0% /dev
+tmpfs                           tmpfs     497M     0  497M   0% /dev/shm
+tmpfs                           tmpfs     497M  6.7M  490M   2% /run
+tmpfs                           tmpfs     497M     0  497M   0% /sys/fs/cgroup
+/dev/sda2                       xfs      1014M   63M  952M   7% /boot
+/dev/mapper/VolGroup00-home     xfs       506M   26M  480M   6% /home
+/dev/mapper/VolGroup00-var      xfs       2.0G  122M  1.9G   6% /var
+tmpfs                           tmpfs     100M     0  100M   0% /run/user/1000
+tmpfs                           tmpfs     100M     0  100M   0% /run/user/0
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ pvs
+  WARNING: Running as a non-root user. Functionality may be unavailable.
+  /run/lvm/lvmetad.socket: access failed: Permission denied
+  WARNING: Failed to connect to lvmetad. Falling back to device scanning.
+  /run/lock/lvm/P_global:aux: open failed: Permission denied
+  Unable to obtain global lock.
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ sudo su
+]0;root@otuslinux:/home/vagrant[?1034h[root@otuslinux vagrant]# pvs
+  PV         VG         Fmt  Attr PSize   PFree  
+  /dev/md0p1 VolGroup00 lvm2 a--  <10.97g  <8.44g
+  /dev/md0p2 VolGroup00 lvm2 a--   <8.97g  <6.94g
+  /dev/sda3  VolGroup00 lvm2 a--  <38.97g <29.47g
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# lvs
+  LV       VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao----   8.00g                                                    
+  LogVol01 VolGroup00 -wi-ao----   1.50g                                                    
+  home     VolGroup00 -wi-ao---- 512.00m                                                    
+  var      VolGroup00 rwi-aor---   2.00g                                    100.00          
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# св  [K[Kcd    [Kmkdir     [K
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# 
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mkdir -p ./{}1},}2},}3},}4},}5},}6},}7},}8},}9},}1}0}
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# touch ./{}a},}s},}d},}f},}g},}h},}j},}k},}l}
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# ls -al
+total 20
+drwx------. 13 vagrant vagrant 4096 May 13 17:40 [0m[01;34m.[0m
+drwxr-xr-x.  3 root    root      21 May 13 14:32 [01;34m..[0m
+-rw-------.  1 vagrant vagrant   21 May 13 15:51 .bash_history
+-rw-r--r--.  1 vagrant vagrant   18 Sep  6  2017 .bash_logout
+-rw-r--r--.  1 vagrant vagrant  193 Sep  6  2017 .bash_profile
+-rw-r--r--.  1 vagrant vagrant  231 Sep  6  2017 .bashrc
+drwx------.  2 vagrant vagrant   29 May 13 14:31 [01;34m.ssh[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m1[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m10[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m2[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m3[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m4[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m5[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m6[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m7[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m8[0m
+drwxr-xr-x.  2 root    root       6 May 13 17:39 [01;34m9[0m
+-rw-r--r--.  1 root    root       0 May 13 17:40 a
+-rw-rw-r--.  1 vagrant vagrant    0 May 13 17:07 after-moves.log
+-rw-r--r--.  1 root    root       0 May 13 17:40 d
+-rw-r--r--.  1 root    root       0 May 13 17:40 f
+-rw-r--r--.  1 root    root       0 May 13 17:40 g
+-rw-r--r--.  1 root    root       0 May 13 17:40 h
+-rw-r--r--.  1 root    root       0 May 13 17:40 j
+-rw-r--r--.  1 root    root       0 May 13 17:40 k
+-rw-r--r--.  1 root    root       0 May 13 17:40 l
+-rw-r--r--.  1 root    root       0 May 13 17:40 s
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# cd /
+]0;root@otuslinux:/[root@otuslinux /]# lvcreate          du -h /home/
+4.0K	/home/vagrant/.ssh
+0	/home/vagrant/1
+0	/home/vagrant/2
+0	/home/vagrant/3
+0	/home/vagrant/4
+0	/home/vagrant/5
+0	/home/vagrant/6
+0	/home/vagrant/7
+0	/home/vagrant/8
+0	/home/vagrant/9
+0	/home/vagrant/10
+28K	/home/vagrant
+28K	/home/
+]0;root@otuslinux:/[root@otuslinux /]# lc vcreate -L 100M -s -n home-bck /dev/[root@otuslinux /]# lvcreate -L 100M -s -n home-bck /dev/V LogVol00 0        VolGroup00/hp ome
+  Using default stripesize 64.00 KiB.
+  Rounding up size to full physical extent 128.00 MiB
+  Logical volume "home-bck" created.
+]0;root@otuslinux:/[root@otuslinux /]# lvs
+  LV       VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol00 VolGroup00 -wi-ao----   8.00g                                                    
+  LogVol01 VolGroup00 -wi-ao----   1.50g                                                    
+  home     VolGroup00 owi-aos--- 512.00m                                                    
+  home-bck VolGroup00 swi-a-s--- 128.00m      home   0.00                                   
+  var      VolGroup00 rwi-aor---   2.00g                                    100.00          
+]0;root@otuslinux:/[root@otuslinux /]# rm -rf /home  /vagrant/{}2},}4},}5}
+]0;root@otuslinux:/[root@otuslinux /]# rm -rf /home/vagrant/{2,4,5}[1P[1P[1P[1P/home/vagrant/{2,4,5}[1P}[1P}[1P}[1P}[1P}a},}g},}j}
+rm: remove regular empty file '/home/vagrant/a'? 
+rm: remove regular empty file '/home/vagrant/g'? 
+rm: remove regular empty file '/home/vagrant/j'? 
+]0;root@otuslinux:/[root@otuslinux /]# lvconvert --merge /dev/VolGroup00/home-bck 
+  Can't merge until origin volume is closed.
+  Merging of snapshot VolGroup00/home-bck will occur on next activation of VolGroup00/home.
+]0;root@otuslinux:/[root@otuslinux /]# exit
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ exit
+
+Script done on Sun May 13 17:57:54 2018
