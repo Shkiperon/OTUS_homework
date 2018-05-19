@@ -5,6 +5,9 @@ if (( $# != 1 )); then
 fi
 
 command -v mutt >/dev/null 2>&1 || { echo >&2 "This script need mutt but it's not installed. Aborting execution."; exit 1; }
+
+adminemail="admin-email@domain.com"
+
 createMuttRc() {
 username="UserName"
 password="SuperMegaPasswOrd"
@@ -44,8 +47,6 @@ trap 'trapAlert "SIGKILL" "9" "$1"' 9
 trap 'trapAlert "SIGALARM" "14" "$1"' 14
 trap 'trapAlert "SIGTERM" "15" "$1"' 15
 trap 'trapAlert "SIGSTOP" "19" "$1"' 19
-
-adminemail=admin-email@domain.com
 
 echo "Sending test message for check installation."
 createMuttRc
