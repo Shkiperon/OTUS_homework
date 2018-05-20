@@ -6,4 +6,4 @@ After=network.target
 Type=forking
 EnvironmentFile=/etc/sysconfig/spawn-fcgi
 ExecStart=/usr/bin/spawn-fcgi $OPTIONS >/dev/null
-ExecStop=kill {MAINPID} && rm -f ${SOCKET}
+ExecStop=/bin/kill {MAINPID} && rm -f ${SOCKET}

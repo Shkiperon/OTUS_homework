@@ -22,4 +22,11 @@ mv /etc/init.d/spawn-fcgi /root/spawn-fcgi.init-bck
 } >> /etc/sysconfig/spawn-fcgi
 systemctl enable spawn-fcgi
 
+#Phase 3
+yum -y install httpd
+mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd-main.conf
+systemctl stop httpd; systemctl disable httpd; mv /lib/systemd/system/httpd.service /root/httpd.service-bck
+mv /vagrant/httpd.service.modified /lib/systemd/system/httpd@.service; systemctl enable httpd@main; systemctl start httpd@main;
+systemctl status httpd@main
+
 echo "Configuration has been finished. Enjoy :-)"
