@@ -1,0 +1,3 @@
+#Configuration file for Shkiperon Service
+WORD="ERROR"
+LOGFILE="/var/log/test-file-for-shkiperonsvc.log"

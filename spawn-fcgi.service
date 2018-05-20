@@ -1,0 +1,9 @@
+[Unit]
+Description=Start and stop FastCGI processes
+After=network.target
+
+[Service]
+Type=forking
+EnvironmentFile=/etc/sysconfig/spawn-fcgi
+ExecStart=/usr/bin/spawn-fcgi $OPTIONS >/dev/null
+ExecStop=kill {MAINPID} && rm -f ${SOCKET}

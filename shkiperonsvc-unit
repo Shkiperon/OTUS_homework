@@ -1,0 +1,7 @@
+[Unit]
+Description=The simple Shkiperon Service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/shkiperonsvc
+ExecStart=/usr/local/bin/shkiperonsvc.sh $WORD $LOGFILE
