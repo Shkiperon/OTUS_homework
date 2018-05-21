@@ -1,0 +1,11 @@
+artiom@kubuntu:~/OTUS$ ps aux | grep myfork
+artiom     567  1.0  0.0  26844  6640 pts/1    S+   00:45   0:00 python ./myfork-new.py
+artiom     570  0.0  0.0  26844  5900 pts/1    S+   00:45   0:00 python ./myfork-new.py
+artiom     576  0.0  0.0  16344   924 pts/2    S+   00:45   0:00 grep --color=auto myfork
+artiom   19536  0.0  0.1 903288 63452 ?        Sl   май21   0:14 pluma /home/artiom/OTUS/myfork-new.py
+artiom@kubuntu:~/OTUS$ kill 567
+artiom@kubuntu:~/OTUS$ kill -2 570
+artiom@kubuntu:~/OTUS$ ps aux | grep myfork
+artiom     687  0.0  0.0  16344   968 pts/2    S+   00:46   0:00 grep --color=auto myfork
+artiom   19536  0.0  0.1 903288 63452 ?        Sl   май21   0:14 pluma /home/artiom/OTUS/myfork-new.py
+artiom@kubuntu:~/OTUS$
