@@ -1,1 +1,5 @@
 My 8th homework in OTUS online school on course "Linux system administrator".
+
+ALARM! Add epel-release to your CentOS 7 before trying to install my custom asterisk
+
+Don't forget put asterisk.service to /lib/systemd/system/

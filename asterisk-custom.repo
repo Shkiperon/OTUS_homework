@@ -1,0 +1,5 @@
+[AsteriskCustomRepo]
+name=AsteriskCustomRepo
+baseurl=http://159.65.8.50/repos/CentOS/7/$basearch
+enabled=1
+gpgcheck=0

@@ -1,0 +1,33 @@
+    1  yum update
+    2  yum install nginx
+    3  yum search nginx
+    4  vi /etc/yum.repos.d/nginx.repo
+    5  yum install nginx
+    6  vi /etc/nginx/nginx.conf 
+    7  vi /etc/nginx/conf.d/default.conf 
+
+Need reconfigure root location:
+
+	location / {
+        autoindex on;
+        autoindex_localtime on;
+        autoindex_exact_size on;
+        root   /usr/share/nginx/html;
+    }
+
+    9  systemctl status nginx
+   10  cp -aR /usr/share/nginx/html ./
+   11  rm -f /usr/share/nginx/html/index.html 
+   12  rm -f /usr/share/nginx/html/50x.html 
+   13  yum install createrepo
+   14  mkdir -p /usr/share/nginx/html/repos/CentOS/7/
+   15  mkdir -p /usr/share/nginx/html/repos/CentOS/7/x86_64
+   16  mkdir -p /usr/share/nginx/html/repos/CentOS/7/x86_64/RPMS
+   17  mkdir -p /usr/share/nginx/html/repos/CentOS/7/x86_64/SRPMS
+   18  createrepo /usr/share/nginx/html/repos/CentOS/7/x86_64/
+   19  nginx -t
+   20  systemctl enable nginx
+   21  systemctl start nginx
+   22  systemctl status nginx.service
+   23  reboot now
+   24  systemctl status nginx
