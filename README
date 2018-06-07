@@ -1,1 +1,5 @@
-My homeworks in OTUS online school on course "Linux system administrator". All homeworks are located in separate branches.
+My 9th homework in OTUS online school on course "Linux system administrator".
+
+Globally here are three /24 subnets for local networks (central, office1 and office2) and three link-subnets /30 (internetRouter-centralRouter, centralRouter-office1Router and centralRouter-office2Router)
+
+Access to Internet can be opened through inetRouter. All routes on other routers configured to take default route through inetRouter.
