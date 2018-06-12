@@ -53,6 +53,42 @@ MACHINES = {
                 ]
   },
 
+  :office1testServer1 => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.2.66', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "test-net"},
+                   {ip: '10.10.10.1', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "vlan-net"},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+                ]
+  },
+
+  :office1testClient1 => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.2.67', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "test-net"},
+                   {ip: '10.10.10.254', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "vlan-net"},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+                ]
+  },
+
+  :office1testServer2 => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.2.68', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "test-net"},
+                   {adapter: 3, auto_config: false, virtualbox__intnet: "vlan-net"},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+                ]
+  },
+
+  :office1testClient2 => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.2.69', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "test-net"},
+                   {adapter: 3, auto_config: false, virtualbox__intnet: "vlan-net"},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+                ]
+  },
+
   :office2Router => {
         :box_name => "centos/7",
         :net => [
@@ -142,6 +178,52 @@ Vagrant.configure("2") do |config|
             nmcli connection reload
             nmcli connection up "System eth0"
             nmcli connection up "System eth1"
+            SHELL
+        when "office1testServer1"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.2.65"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            mkdir -p ~/.ssh && cat /vagrant/vagrant_vlan.pub >> ~/.ssh/authorized_keys
+            chown root:root ~/.ssh/authorized_keys && chmod 0600 ~/.ssh/authorized_keys
+            SHELL
+        when "office1testClient1"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.2.65"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            mkdir -p /home/vagrant/.ssh/
+            cp /vagrant/vagrant_vlan /home/vagrant/.ssh/id_rsa && chmod 0600 /home/vagrant/.ssh/id_rsa
+            chown -R vagrant:vagrant /home/vagrant/.ssh
+            SHELL
+        when "office1testServer2"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.2.65"
+            nmcli connection add type vlan con-name vlan-eth2.2 dev eth2 ifname eth2.2 id 2 ip4 10.10.10.1/24
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            nmcli connection up "vlan-eth2.2"
+            mkdir -p ~/.ssh && cat /vagrant/vagrant_vlan.pub >> ~/.ssh/authorized_keys
+            chown root:root ~/.ssh/authorized_keys && chmod 0600 ~/.ssh/authorized_keys
+            SHELL
+        when "office1testClient2"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.2.65"
+            nmcli connection add type vlan con-name vlan-eth2.2 dev eth2 ifname eth2.2 id 2 ip4 10.10.10.254/24
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            nmcli connection up "vlan-eth2.2"
+            mkdir -p /home/vagrant/.ssh/
+            cp /vagrant/vagrant_vlan /home/vagrant/.ssh/id_rsa && chmod 0600 /home/vagrant/.ssh/id_rsa
+            chown -R vagrant:vagrant /home/vagrant/.ssh
             SHELL
         when "office2Router"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
