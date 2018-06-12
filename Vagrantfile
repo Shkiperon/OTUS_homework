@@ -6,7 +6,7 @@
 MACHINES = {
 :inetRouter => {
         :box_name => "centos/6",
-        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        #:public => {adapter: 1},
         :net => [
                    {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
                 ]
@@ -19,6 +19,8 @@ MACHINES = {
                    {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
                    {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
                    {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "wifi-net"},
+                   {ip: '192.168.254.1', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "gate1-net"},
+                   {ip: '192.168.253.1', adapter: 7, netmask: "255.255.255.252", virtualbox__intnet: "gate2-net"},
                 ]
   },
   
@@ -38,6 +40,7 @@ MACHINES = {
                    {ip: '192.168.2.65', adapter: 3, netmask: "255.255.255.192", virtualbox__intnet: "test-net"},
                    {ip: '192.168.2.129', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "mgmt-net"},
                    {ip: '192.168.2.193', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "hw-net"},
+                   {ip: '192.168.254.2', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "gate1-net"},
                 ]
   },
 
@@ -56,6 +59,7 @@ MACHINES = {
                    {ip: '192.168.1.1', adapter: 2, netmask: "255.255.255.128", virtualbox__intnet: "dev-net"},
                    {ip: '192.168.1.129', adapter: 3, netmask: "255.255.255.192", virtualbox__intnet: "test-net"},
                    {ip: '192.168.1.193', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "hw-net"},
+                   {ip: '192.168.253.2', adapter: 5, netmask: "255.255.255.252", virtualbox__intnet: "gate2-net"},
                 ]
   },
 
@@ -103,14 +107,14 @@ Vagrant.configure("2") do |config|
             sysctl net.ipv4.conf.all.forwarding=1
             nmcli connection modify "System eth0" ipv4.never-default yes
             nmcli connection modify "System eth1" ipv4.gateway "192.168.255.1"
-            nmcli connection modify "System eth3" +ipv4.addresses "192.168.254.1/30"
-            nmcli connection modify "System eth3" +ipv4.addresses "192.168.253.1/30"
-            nmcli connection modify "System eth3" +ipv4.routes "192.168.2.0/24 192.168.254.2"
-            nmcli connection modify "System eth3" +ipv4.routes "192.168.1.0/24 192.168.253.2"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.2.0/24 192.168.254.2"
+            nmcli connection modify "System eth6" +ipv4.routes "192.168.1.0/24 192.168.253.2"
             nmcli connection reload
             nmcli connection up "System eth0"
             nmcli connection up "System eth1"
-            nmcli connection up "System eth3"
+            nmcli connection up "System eth5"
+            nmcli connection up "System eth6"
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE
             SHELL
         when "centralServer"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
@@ -124,14 +128,12 @@ Vagrant.configure("2") do |config|
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             sysctl net.ipv4.conf.all.forwarding=1
             nmcli connection modify "System eth0" ipv4.never-default yes
-            nmcli connection modify "System eth4" +ipv4.addresses "192.168.254.2/30"
-            nmcli connection modify "System eth4" ipv4.gateway "192.168.254.1"
-            nmcli connection modify "System eth4" +ipv4.routes "192.168.0.0/24 192.168.254.1"
-            nmcli connection modify "System eth4" +ipv4.routes "192.168.1.0/24 192.168.254.1"
+            nmcli connection modify "System eth5" ipv4.gateway "192.168.254.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.0.0/24 192.168.254.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.1.0/24 192.168.254.1"
             nmcli connection reload
             nmcli connection up "System eth0"
-            nmcli connection up "System eth1"
-            nmcli connection up "System eth4"
+            nmcli connection up "System eth5"
             SHELL
         when "office1Server"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
@@ -145,14 +147,12 @@ Vagrant.configure("2") do |config|
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             sysctl net.ipv4.conf.all.forwarding=1
             nmcli connection modify "System eth0" ipv4.never-default yes
-            nmcli connection modify "System eth3" +ipv4.addresses "192.168.253.2/30"
-            nmcli connection modify "System eth3" ipv4.gateway "192.168.253.1"
-            nmcli connection modify "System eth3" +ipv4.routes "192.168.0.0/24 192.168.253.1"
-            nmcli connection modify "System eth3" +ipv4.routes "192.168.2.0/24 192.168.253.1"
+            nmcli connection modify "System eth4" ipv4.gateway "192.168.253.1"
+            nmcli connection modify "System eth4" +ipv4.routes "192.168.0.0/24 192.168.253.1"
+            nmcli connection modify "System eth4" +ipv4.routes "192.168.2.0/24 192.168.253.1"
             nmcli connection reload
             nmcli connection up "System eth0"
-            nmcli connection up "System eth1"
-            nmcli connection up "System eth3"
+            nmcli connection up "System eth4"
             SHELL
         when "office2Server"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
