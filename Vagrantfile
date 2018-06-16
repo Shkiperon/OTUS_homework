@@ -1,7 +1,5 @@
 # -*- mode: ruby -*-
 # vim: set ft=ruby :
-# -*- mode: ruby -*-
-# vim: set ft=ruby :
 
 MACHINES = {
 :inetRouter => {
@@ -9,6 +7,8 @@ MACHINES = {
         #:public => {adapter: 1},
         :net => [
                    {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                   {adapter: 3, auto_config: false, virtualbox__intnet: "router-net"},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: "router-net"},
                 ]
   },
 
@@ -21,6 +21,8 @@ MACHINES = {
                    {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "wifi-net"},
                    {ip: '192.168.254.1', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "gate1-net"},
                    {ip: '192.168.253.1', adapter: 7, netmask: "255.255.255.252", virtualbox__intnet: "gate2-net"},
+                   {ip: '192.168.250.2', adapter: 8, netmask: "255.255.255.248", virtualbox__intnet: "router-net"},
+#                   {ip: '192.168.250.3', adapter: 9, netmask: "255.255.255.248", virtualbox__intnet: "router-net"},
                 ]
   },
   
@@ -127,6 +129,10 @@ Vagrant.configure("2") do |config|
           box.vm.network "public_network", boxconfig[:public]
         end
 
+        box.vm.provider :virtualbox do |vb|
+          vb.memory = 256
+        end
+
         box.vm.provision "shell", inline: <<-SHELL
           mkdir -p ~root/.ssh
                 cp ~vagrant/.ssh/auth* ~root/.ssh
@@ -137,6 +143,10 @@ Vagrant.configure("2") do |config|
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             sysctl net.ipv4.conf.all.forwarding=1
             iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+            cp /vagrant/ifcfg-inet-eth2 /etc/sysconfig/network-scripts/ifcfg-eth2; chmod 0600 /etc/sysconfig/network-scripts/ifcfg-eth2
+            cp /vagrant/ifcfg-inet-eth3 /etc/sysconfig/network-scripts/ifcfg-eth3; chmod 0600 /etc/sysconfig/network-scripts/ifcfg-eth3
+            cp /vagrant/ifcfg-inet-bond0 /etc/sysconfig/network-scripts/ifcfg-bond0; chmod 0600 /etc/sysconfig/network-scripts/ifcfg-bond0
+            service network restart
             SHELL
         when "centralRouter"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
