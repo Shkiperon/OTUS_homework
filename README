@@ -1,3 +1,22 @@
-My 10th homework in OTUS online school on course "Linux system administrator".
+My 11th homework in OTUS online school on course "Linux system administrator".
 
-From testClient VMs added possibility to ssh as root to 10.10.10.1 from theirs VLANs.
+For start OpenVPN client on your machine you must run command "sudo openvpn --config ./host-tun.conf" from vagrant directory, after:
+1. Running "vagrant up" in project direcory;
+2. Modifying server ip in ./host-tun.conf;
+3. Creating two file (ca.crt and tun.key);
+Information for steps 2 and 3 you will see in console after finishing processing "vagrant up" command.
+
+You can SSH between client and server VMs and host via SSH keys (on client and server VMs keys deploys automatically).
+For SSH from host to server VM (via server_HOST-LAN_IP and server_OVPN_IP) you must add ./vagrant_ovpn to ~/.ssh/ directory, and add to ~/.ssh/config these lines:
+-------------------------
+Host {IP_from_vagrant_up_Output}
+  HostName {IP_from_vagrant_up_Output}
+  User root
+  IdentityFile /home/{username}/.ssh/vagrant_ovpn
+
+Host 10.0.0.5
+  HostName 10.0.0.5
+  User root
+  IdentityFile /home/{username}/.ssh/vagrant_ovpn
+-------------------------
+Command for Vi, that can be usefull - ":%s/    client: //gc". It will delete all confirmed parts of strings with "    client: " in file.
