@@ -1,8 +1,0 @@
-NM_CONTROLLED=no
-TYPE=Ethernet
-BOOTPROTO=none
-ONBOOT=yes
-SLAVE=yes
-MASTER=bond0
-DEVICE=eth3
-PEERDNS=no
