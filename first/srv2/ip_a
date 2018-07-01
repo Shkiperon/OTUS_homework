@@ -1,0 +1,33 @@
+[vagrant@srv2 ~]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 52:54:00:c9:c7:04 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global noprefixroute dynamic eth0
+       valid_lft 85133sec preferred_lft 85133sec
+    inet6 fe80::5054:ff:fec9:c704/64 scope link 
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:42:ec:ed brd ff:ff:ff:ff:ff:ff
+4: eth2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:b4:68:07 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.1/24 brd 192.168.1.255 scope global noprefixroute eth2
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:feb4:6807/64 scope link 
+       valid_lft forever preferred_lft forever
+5: eth1.10@eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 08:00:27:42:ec:ed brd ff:ff:ff:ff:ff:ff
+    inet 10.0.10.2/30 brd 10.0.10.3 scope global noprefixroute eth1.10
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c767:3395:dc49:1d38/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+6: eth1.30@eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 08:00:27:42:ec:ed brd ff:ff:ff:ff:ff:ff
+    inet 10.0.30.1/30 brd 10.0.30.3 scope global noprefixroute eth1.30
+       valid_lft forever preferred_lft forever
+    inet6 fe80::3e58:fcd9:fed8:3acb/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever

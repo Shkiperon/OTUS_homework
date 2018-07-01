@@ -1,0 +1,38 @@
+!
+! Zebra configuration saved from vty
+!   2018/07/01 14:34:39
+!
+!
+!
+!
+interface eth0
+!
+interface eth1
+!
+interface eth1.10
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 vlan10
+ ip ospf cost 500
+ ip ospf hello-interval 20
+ ip ospf dead-interval 60
+!
+interface eth1.20
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 vlan20
+ ip ospf cost 500
+ ip ospf hello-interval 20
+ ip ospf dead-interval 60
+!
+interface eth2
+!
+interface lo
+!
+router ospf
+ ospf router-id 10.0.0.1
+ redistribute connected route-map REDIST-MAP
+ network 10.0.10.0/30 area 0.0.0.0
+ network 10.0.20.0/30 area 0.0.0.0
+ network 192.168.0.0/24 area 0.0.0.1
+!
+line vty
+!
