@@ -1,38 +1,93 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby :
+# vim: set ft=ruby :
 
-Vagrant.configure(2) do |config|
-  config.vm.box = "centos/7"
+MACHINES = {
+  :inetRouter => {
+        :box_name => "centos/6",
+        #:public => {adapter: 1},
+        :net => [
+                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
+                   {adapter: 3, auto_config: false, virtualbox__intnet: "router-net"},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: "router-net"},
+                ]
+  },
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.verbose = "vvv"
-    ansible.playbook = "provisioning/playbook.yml"
-    ansible.sudo = "true"
+  :inetRouter2 => {
+        :box_name => "centos/6",
+        #:public => {adapter: 1},
+        :net => [
+                   {ip: '192.168.255.3', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
+                ]
+  },
+
+  :centralRouter => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
+                ]
+  },
+  
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+    config.vm.define boxname do |box|
+
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provider :virtualbox do |vb|
+          vb.memory = 256
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+        
+        case boxname.to_s
+        when "inetRouter"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            sysctl net.ipv4.conf.all.forwarding=1
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+            service network restart
+            SHELL
+        when "inetRouter2"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            sysctl net.ipv4.conf.all.forwarding=1
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.255.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+            service network restart
+            SHELL
+        when "centralRouter"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            sysctl net.ipv4.conf.all.forwarding=1
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.255.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE
+            SHELL
+        end
+
+      end
+
   end
-
-
-  config.vm.provider "virtualbox" do |v|
-	  v.memory = 256
-  end
-
-  config.vm.define "ns01" do |ns01|
-    ns01.vm.network "private_network", ip: "192.168.50.10", virtualbox__intnet: "dns"
-    ns01.vm.hostname = "ns01"
-  end
-
-  config.vm.define "ns02" do |ns02|
-    ns02.vm.network "private_network", ip: "192.168.50.11", virtualbox__intnet: "dns"
-    ns02.vm.hostname = "ns02"
-  end
-
-  config.vm.define "client1" do |client|
-    client.vm.network "private_network", ip: "192.168.50.15", virtualbox__intnet: "dns"
-    client.vm.hostname = "client1"
-  end
-
-  config.vm.define "client2" do |client|
-    client.vm.network "private_network", ip: "192.168.50.14", virtualbox__intnet: "dns"
-    client.vm.hostname = "client2"
-  end
-
+  
+  
 end
