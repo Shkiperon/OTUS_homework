@@ -1,0 +1,71 @@
+---
+#- hosts: all
+#  become_method: sudo
+#  tasks:
+
+- hosts: inetRouter
+  become: yes
+  tasks:
+  - name: Running commands for inetRouter
+    shell: |
+      sysctl net.ipv4.conf.all.forwarding=1
+      iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+      service network restart
+    args:
+      executable: /bin/bash
+
+- hosts: inetRouter2
+  become: yes
+  tasks:
+  - name: Running commands for inetRouter2
+    shell: |
+      sysctl net.ipv4.conf.all.forwarding=1
+      nmcli c modify "System eth0" ipv4.never-default yes
+      nmcli c modify "System eth1" ipv4.gateway "192.168.255.1"
+      nmcli c reload
+      nmcli c up "System eth0"
+      nmcli c up "System eth1"
+      iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE
+    args:
+      executable: /bin/bash
+
+- hosts: centralRouter
+  become: yes
+  tasks:
+  - name: Running commands for centralRouter
+    shell: |
+      sysctl net.ipv4.conf.all.forwarding=1
+      nmcli c modify "System eth0" ipv4.never-default yes
+      nmcli c modify "System eth1" ipv4.gateway "192.168.255.1"
+      nmcli c modify "System eth5" +ipv4.routes "192.168.2.0/24 192.168.254.2"
+      nmcli c modify "System eth6" +ipv4.routes "192.168.1.0/24 192.168.253.2"
+      nmcli c reload
+      nmcli c up "System eth0"
+      nmcli c up "System eth1"
+      nmcli c up "System eth5"
+      nmcli c up "System eth6"
+      iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE
+    args:
+      executable: /bin/bash
+
+- hosts: centralServer
+  become: yes
+  tasks:
+  - name: Running commands for centralServer
+    shell: |
+      nmcli c modify "System eth0" ipv4.never-default yes
+      nmcli c modify "System eth1" ipv4.gateway "192.168.0.1"
+      #Need to kill IPv6, because base repo files is broken through it. No one can normal configure IPv6 ib CentOS.ORG
+      nmcli c reload
+      nmcli c up "System eth0"
+      nmcli c up "System eth1"
+      echo "[nginx]" > /etc/yum.repos.d/nginx.repo
+      echo "name=nginx repo" >> /etc/yum.repos.d/nginx.repo
+      echo "baseurl=http://nginx.org/packages/centos/7/\$basearch/" >> /etc/yum.repos.d/nginx.repo
+      echo "gpgcheck=0" >> /etc/yum.repos.d/nginx.repo
+      echo "enabled=1" >> /etc/yum.repos.d/nginx.repo
+    args:
+      executable: /bin/bash
+
+  - name: installing NGINX
+    yum: name=nginx state=latest 
