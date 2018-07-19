@@ -6,118 +6,138 @@
 - hosts: inetRouter
   become: yes
   tasks:
+  - name: Installing libselinux-python
+    yum:
+            name: libselinux-python
+            state: latest
+            update_cache: yes
+
+  - name: Set ip forwarding = 1
+    sysctl:
+            name: net.ipv4.conf.all.forwarding
+            value: 1
+            sysctl_set: yes
+            state: present
+            reload: yes
+
   - name: Running commands for inetRouter
-    shell: |
-      sysctl net.ipv4.conf.all.forwarding=1
-      iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
-    args:
-      executable: /bin/bash
+    shell: iptables-restore < /vagrant/iptables-inetRouter
 
 - hosts: inetRouter2
   become: yes
   tasks:
   - name: Running commands for inetRouter2
     shell: |
-      sysctl net.ipv4.conf.all.forwarding=1
-      iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+            sysctl net.ipv4.conf.all.forwarding=1
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
     args:
-      executable: /bin/bash
+            executable: /bin/bash
 
 - hosts: centralRouter
   become: yes
   tasks:
+  - name: Set ip forwarding = 1
+    sysctl:
+            name: net.ipv4.conf.all.forwarding
+            value: 1
+            sysctl_set: yes
+            state: present
+            reload: yes
   - name: Running commands for centralRouter
     shell: |
-      sysctl net.ipv4.conf.all.forwarding=1
-      nmcli connection modify "System eth0" ipv4.never-default yes
-      nmcli connection modify "System eth1" ipv4.gateway "192.168.255.1"
-      nmcli connection modify "System eth5" +ipv4.routes "192.168.2.0/24 192.168.254.2"
-      nmcli connection modify "System eth6" +ipv4.routes "192.168.1.0/24 192.168.253.2"
-      nmcli connection reload
-      nmcli connection up "System eth0"
-      nmcli connection up "System eth1"
-      nmcli connection up "System eth5"
-      nmcli connection up "System eth6"
-      iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE
+            sysctl net.ipv4.conf.all.forwarding=1
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.255.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.2.0/24 192.168.254.2"
+            nmcli connection modify "System eth6" +ipv4.routes "192.168.1.0/24 192.168.253.2"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            nmcli connection up "System eth5"
+            nmcli connection up "System eth6"
+            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth1 -j MASQUERADE
     args:
-      executable: /bin/bash
+            executable: /bin/bash
 
 - hosts: centralServer
   become: yes
   tasks:
   - name: Running commands for centralServer
     shell: |
-      nmcli connection modify "System eth0" ipv4.never-default yes
-      nmcli connection modify "System eth1" ipv4.gateway "192.168.0.1"
-      nmcli connection reload
-      nmcli connection up "System eth0"
-      nmcli connection up "System eth1"
-      echo "[nginx]" > /etc/yum.repos.d/nginx.repo
-      echo "name=nginx repo" >> /etc/yum.repos.d/nginx.repo
-      echo "baseurl=http://nginx.org/packages/centos/7/\$basearch/" >> /etc/yum.repos.d/nginx.repo
-      echo "gpgcheck=0" >> /etc/yum.repos.d/nginx.repo
-      echo "enabled=1" >> /etc/yum.repos.d/nginx.repo
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.0.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            echo "[nginx]" > /etc/yum.repos.d/nginx.repo
+            echo "name=nginx repo" >> /etc/yum.repos.d/nginx.repo
+            echo "baseurl=http://nginx.org/packages/centos/7/\$basearch/" >> /etc/yum.repos.d/nginx.repo
+            echo "gpgcheck=0" >> /etc/yum.repos.d/nginx.repo
+            echo "enabled=1" >> /etc/yum.repos.d/nginx.repo
     args:
-      executable: /bin/bash
-
-  - name: installing nginx
-    yum: name=nginx state=latest 
+            executable: /bin/bash
+            
+  - name: Installing nginx
+    yum:
+            name: nginx
+            state: latest
+            update_cache: yes
 
 - hosts: office1Router
   become: yes
   tasks:
   - name: Running commands for office1Router
     shell: |
-      sysctl net.ipv4.conf.all.forwarding=1
-      nmcli connection modify "System eth0" ipv4.never-default yes
-      nmcli connection modify "System eth5" ipv4.gateway "192.168.254.1"
-      nmcli connection modify "System eth5" +ipv4.routes "192.168.0.0/24 192.168.254.1"
-      nmcli connection modify "System eth5" +ipv4.routes "192.168.1.0/24 192.168.254.1"
-      nmcli connection reload
-      nmcli connection up "System eth0"
-      nmcli connection up "System eth5"
+            sysctl net.ipv4.conf.all.forwarding=1
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth5" ipv4.gateway "192.168.254.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.0.0/24 192.168.254.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.1.0/24 192.168.254.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth5"
     args:
-      executable: /bin/bash
-
+            executable: /bin/bash
+            
 - hosts: office1Server
   become: yes
   tasks:
   - name: Running commands for office1Server
     shell: |
-      nmcli connection modify "System eth0" ipv4.never-default yes
-      nmcli connection modify "System eth1" ipv4.gateway "192.168.2.193"
-      nmcli connection reload
-      nmcli connection up "System eth0"
-      nmcli connection up "System eth1"
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.2.193"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
     args:
-      executable: /bin/bash
-
+            executable: /bin/bash
+            
 - hosts: office2Router
   become: yes
   tasks:
   - name: Running commands for office2Router
     shell: |
-      sysctl net.ipv4.conf.all.forwarding=1
-      nmcli connection modify "System eth0" ipv4.never-default yes
-      nmcli connection modify "System eth4" ipv4.gateway "192.168.253.1"
-      nmcli connection modify "System eth4" +ipv4.routes "192.168.0.0/24 192.168.253.1"
-      nmcli connection modify "System eth4" +ipv4.routes "192.168.2.0/24 192.168.253.1"
-      nmcli connection reload
-      nmcli connection up "System eth0"
-      nmcli connection up "System eth4"
+            sysctl net.ipv4.conf.all.forwarding=1
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth4" ipv4.gateway "192.168.253.1"
+            nmcli connection modify "System eth4" +ipv4.routes "192.168.0.0/24 192.168.253.1"
+            nmcli connection modify "System eth4" +ipv4.routes "192.168.2.0/24 192.168.253.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth4"
     args:
-      executable: /bin/bash
-
+            executable: /bin/bash
+            
 - hosts: office2Server
   become: yes
   tasks:
   - name: Running commands for office2Server
     shell: |
-      nmcli connection modify "System eth0" ipv4.never-default yes
-      nmcli connection modify "System eth1" ipv4.gateway "192.168.1.193"
-      nmcli connection reload
-      nmcli connection up "System eth0"
-      nmcli connection up "System eth1"
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.1.193"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
     args:
-      executable: /bin/bash
+            executable: /bin/bash
 
