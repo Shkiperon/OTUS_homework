@@ -1,0 +1,161 @@
+---
+#- hosts: all
+#  become_method: sudo
+#  tasks:
+
+- hosts: inetRouter
+  become: yes
+  tasks:
+  - name: Installing libselinux-python
+    yum:
+            name: libselinux-python
+            state: latest
+            update_cache: yes
+
+  - name: Set ip forwarding = 1
+    sysctl:
+            name: net.ipv4.conf.all.forwarding
+            value: 1
+            sysctl_set: yes
+            state: present
+            reload: yes
+
+  - name: Running commands for inetRouter
+    shell: |
+            iptables-restore < /vagrant/iptables-inetRouter
+            ip route add 192.168.0.0/16 via 192.168.255.2
+
+- hosts: centralRouter
+  become: yes
+  tasks:
+  - name: Installing libselinux-python
+    yum:
+            name: libselinux-python
+            state: latest
+            update_cache: yes
+
+  - name: Set ip forwarding = 1
+    sysctl:
+            name: net.ipv4.conf.all.forwarding
+            value: 1
+            sysctl_set: yes
+            state: present
+            reload: yes
+
+  - name: Running commands for centralRouter
+    shell: |
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.255.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.2.0/24 192.168.254.2"
+            nmcli connection modify "System eth6" +ipv4.routes "192.168.1.0/24 192.168.253.2"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+            nmcli connection up "System eth5"
+            nmcli connection up "System eth6"
+    args:
+            executable: /bin/bash
+
+- hosts: centralServer
+  become: yes
+  tasks:
+
+  - name: Installing epel-release
+    yum:
+            name: epel-release
+            state: latest
+
+  - name: Running commands for centralServer
+    shell: |
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.0.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+    args:
+            executable: /bin/bash
+
+- hosts: office1Router
+  become: yes
+  tasks:
+  - name: Installing libselinux-python
+    yum:
+            name: libselinux-python
+            state: latest
+            update_cache: yes
+
+  - name: Set ip forwarding = 1
+    sysctl:
+            name: net.ipv4.conf.all.forwarding
+            value: 1
+            sysctl_set: yes
+            state: present
+            reload: yes
+
+  - name: Running commands for office1Router
+    shell: |
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth5" ipv4.gateway "192.168.254.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.0.0/24 192.168.254.1"
+            nmcli connection modify "System eth5" +ipv4.routes "192.168.1.0/24 192.168.254.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth5"
+    args:
+            executable: /bin/bash
+            
+- hosts: office1Server
+  become: yes
+  tasks:
+  - name: Running commands for office1Server
+    shell: |
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.2.193"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+    args:
+            executable: /bin/bash
+            
+- hosts: office2Router
+  become: yes
+  tasks:
+  - name: Installing libselinux-python
+    yum:
+            name: libselinux-python
+            state: latest
+            update_cache: yes
+
+  - name: Set ip forwarding = 1
+    sysctl:
+            name: net.ipv4.conf.all.forwarding
+            value: 1
+            sysctl_set: yes
+            state: present
+            reload: yes
+
+  - name: Running commands for office2Router
+    shell: |
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth4" ipv4.gateway "192.168.253.1"
+            nmcli connection modify "System eth4" +ipv4.routes "192.168.0.0/24 192.168.253.1"
+            nmcli connection modify "System eth4" +ipv4.routes "192.168.2.0/24 192.168.253.1"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth4"
+    args:
+            executable: /bin/bash
+            
+- hosts: office2Server
+  become: yes
+  tasks:
+  - name: Running commands for office2Server
+    shell: |
+            nmcli connection modify "System eth0" ipv4.never-default yes
+            nmcli connection modify "System eth1" ipv4.gateway "192.168.1.193"
+            nmcli connection reload
+            nmcli connection up "System eth0"
+            nmcli connection up "System eth1"
+    args:
+            executable: /bin/bash
+
