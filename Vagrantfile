@@ -2,40 +2,17 @@
 # vim: set ft=ruby :
 
 MACHINES = {
-  :inetRouter => {
-        :box_name => "centos/6",
-        #:public => {adapter: 1},
-        :net => [
-                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
-                ]
-  },
-
-  :inetRouter2 => {
-        :box_name => "centos/7",
-        :public => {adapter: 3},
-        :net => [
-                   {ip: '192.168.255.3', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
-                ]
-  },
-
-  :centralRouter => {
-        :box_name => "centos/7",
-        :net => [
-                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
-                   {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-                   {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
-                   {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "wifi-net"},
-                   {ip: '192.168.254.1', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "gate1-net"},
-                   {ip: '192.168.253.1', adapter: 7, netmask: "255.255.255.252", virtualbox__intnet: "gate2-net"},
-                ]
-  },
-  
-  :centralServer => {
+  :Server => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-                   {adapter: 3, auto_config: false, virtualbox__intnet: true},
-                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+                ]
+  },
+
+  :Test => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.0.3', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
                 ]
   },
 
@@ -53,7 +30,7 @@ Vagrant.configure("2") do |config|
         boxconfig[:net].each do |ipconf|
           box.vm.network "private_network", ipconf
         end
-        
+
         if boxconfig.key?(:public)
           box.vm.network "public_network", boxconfig[:public]
         end
@@ -62,15 +39,33 @@ Vagrant.configure("2") do |config|
           vb.memory = 256
         end
 
-        box.vm.provision "ansible" do |ansible|
-          ansible.verbose = "vvv"
-          ansible.playbook = "playbook.yml"
+        box.vm.provision "shell", run: "always", inline: <<-SHELL
+          mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+
+	case boxname.to_s
+        when "Server"
+          box.vm.provision "shell", run: "always", inline: <<-SHELL
+            yum install -y epel-release
+            yum install -y pam_script
+  	    useradd firstuser
+            echo "firstuser:firstpass" | chpasswd
+            useradd seconduser
+            echo "seconduser:secondpass" | chpasswd
+            groupadd admin
+            usermod -a -G admin firstuser
+            sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+            echo "auth       required     pam_script.so" >> /etc/pam.d/sshd
+            echo "cap_sys_admin seconduser" > /etc/security/capability.conf
+            echo "auth       optional     pam_cap.so" >> /etc/pam.d/su
+            cp /vagrant/pam_script /etc/pam_script && chmod 0755 /etc/pam_script
+            systemctl restart sshd
+          SHELL
         end
 
       end
 
   end
-  
-  
+
 end
 
