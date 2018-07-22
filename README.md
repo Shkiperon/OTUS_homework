@@ -1,6 +1,5 @@
-My spared 14th and 16th homeworks in OTUS online school on course "Linux system administrator".
-After 'vagrant up' you can:
-1) Connect to centralRouter, and run command:
-   '/home/vagrant/knock.sh 192.168.255.1 7777 5555 3333 && ssh vagrant@192.168.255.1'
-   It will open for you access via SSH to inetRouter (port-knocking), and authorize you on it via SSH-key
-2) Connect to inetRouter2, and look at IPv4 address on eth2, and open in your host browser link http://$IPv4:8080. It will be open nginx web-site, which run on centralServer on 80/TCP.
+My 17th homework in OTUS online school on course "Linux system administrator".
+For test access - connect to VM "Test" and try connect to 192.168.0.2 with usernames:
+1) firstuser - can access anytime.
+2) seconduser - can access only in period mon-fri and non-holidays (list of holidays is listed in bash array "holidays" in pam_script).
+seconduser has some root privileges listed in https://jlk.fjfi.cvut.cz/arch/manpages/man/capabilities.7 (granted via CAP_SYS_ADMIN), but for typical system administrator in office there are useless.
