@@ -78,8 +78,13 @@
   user: root
   roles:
           - ansible-freeipa/roles/ipaserver
-  vars_files:
-          - playbook_sensitive_data.yml
+  vars:
+          ipaserver_domain: otus.lan
+          ipaserver_realm: OTUS.LAN
+          ipaadmin_password: OtusSecretPass
+          ipadm_password: OtusSecretPass
+          ipaserver_setup_dns: yes
+          ipaserver_auto_forwarders: yes
 
 - hosts: office1Router
   become: yes
