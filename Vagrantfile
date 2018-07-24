@@ -10,14 +10,6 @@ MACHINES = {
                 ]
   },
 
-  :inetRouter2 => {
-        :box_name => "centos/7",
-        :public => {adapter: 3},
-        :net => [
-                   {ip: '192.168.255.3', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
-                ]
-  },
-
   :centralRouter => {
         :box_name => "centos/7",
         :net => [
