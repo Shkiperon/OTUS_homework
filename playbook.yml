@@ -74,6 +74,12 @@
             nmcli connection up "System eth1"
     args:
             executable: /bin/bash
+  gather_facts: yes
+  user: root
+  roles:
+          - ansible-freeipa/roles/ipaserver
+  vars_files:
+          - playbook_sensitive_data.yml
 
 - hosts: office1Router
   become: yes
