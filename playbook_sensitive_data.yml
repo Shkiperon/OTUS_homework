@@ -1,9 +1,0 @@
----
-
-[ipaserver]
-    ipaserver_domain=otus.lan
-    ipaserver_realm=OTUS.LAN
-    ipaadmin_password=OtusSecretPass
-    ipadm_password=OtusSecretPass
-    ipaserver_setup_dns=yes
-    ipaserver_auto_forwarders=yes
