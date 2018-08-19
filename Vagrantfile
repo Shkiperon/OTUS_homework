@@ -2,7 +2,7 @@
 # vim: set ft=ruby :
 
 MACHINES = {
-  :inetRouter => {
+  :'inetrouter.otus.lan' => {
         :box_name => "centos/6",
         #:public => {adapter: 1},
         :net => [
@@ -10,7 +10,7 @@ MACHINES = {
                 ]
   },
 
-  :centralRouter => {
+  :'centralrouter.otus.lan' => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
@@ -22,7 +22,7 @@ MACHINES = {
                 ]
   },
   
-  :centralServer => {
+  :'centralserver.otus.lan' => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
@@ -31,7 +31,7 @@ MACHINES = {
                 ]
   },
 
-  :office1Router => {
+  :'office1router.otus.lan' => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.2.1', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "dev-net"},
@@ -42,7 +42,7 @@ MACHINES = {
                 ]
   },
 
-  :office1Server => {
+  :'office1server.otus.lan' => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.2.194', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "hw-net"},
@@ -51,7 +51,7 @@ MACHINES = {
                 ]
   },
 
-  :office2Router => {
+  :'office2router.otus.lan' => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.1.1', adapter: 2, netmask: "255.255.255.128", virtualbox__intnet: "dev-net"},
@@ -61,7 +61,7 @@ MACHINES = {
                 ]
   },
 
-  :office2Server => {
+  :'office2server.otus.lan' => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.1.194', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "hw-net"},
@@ -89,7 +89,7 @@ Vagrant.configure("2") do |config|
         end
 
         box.vm.provider :virtualbox do |vb|
-          vb.memory = 256
+          vb.memory = 1024
         end
 
         box.vm.provision "ansible" do |ansible|
@@ -100,6 +100,5 @@ Vagrant.configure("2") do |config|
       end
 
   end
-  
   
 end

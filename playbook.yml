@@ -3,7 +3,7 @@
 #  become_method: sudo
 #  tasks:
 
-- hosts: inetRouter
+- hosts: inetrouter.otus.lan
   become: yes
   tasks:
   - name: Installing libselinux-python
@@ -25,7 +25,7 @@
             iptables-restore < /vagrant/iptables-inetRouter
             ip route add 192.168.0.0/16 via 192.168.255.2
 
-- hosts: centralRouter
+- hosts: centralrouter.otus.lan
   become: yes
   tasks:
   - name: Installing libselinux-python
@@ -53,17 +53,90 @@
             nmcli connection up "System eth1"
             nmcli connection up "System eth5"
             nmcli connection up "System eth6"
-    args:
-            executable: /bin/bash
 
-- hosts: centralServer
+- hosts: centralserver.otus.lan
   become: yes
   tasks:
-
   - name: Installing epel-release
     yum:
             name: epel-release
             state: latest
+  - name: Installing ipa-server and expect
+    yum:
+            name: "{{ packages }}"
+    vars:
+            packages:
+            - ipa-server
+            - ipa-server-dns
+            - expect
+
+  - lineinfile:
+          path: /etc/selinux/config
+          regexp: 'SELINUX=enforcing'
+          line: 'SELINUX=disabled'
+
+  - name: Stop SELinux
+    shell: |
+            setenforce 0
+
+  - lineinfile:
+          path: /etc/hosts
+          regexp: 'centralserver'
+          line: '192.168.0.2       centralserver.otus.lan  centralserver'
+
+  - name: Configure ipa-server
+    shell: |
+            spawn ipa-server-install
+
+            expect "Do you want to configure integrated DNS"
+            send "yes\n"
+
+            expect "Server host name"
+            send "\n"
+
+            expect "Please confirm the domain name"
+            send "\n"
+
+            expect "Please provide a realm name"
+            send "\n"
+
+            expect "Directory Manager password"
+            send "OtusPassWord\n"
+
+            expect "Password (confirm)"
+            send "OtusPassWord\n"
+
+            expect "IPA admin password"
+            send "OtusPassWord\n"
+
+            expect "Password (confirm)"
+            send "OtusPassWord\n"
+
+            expect "Do you want to configure DNS forwarders"
+            send "yes\n"
+
+            expect "Do you want to configure these servers as DNS forwarders"
+            send "yes\n"
+
+            expect "Enter an IP address for a DNS forwarder, or press Enter to skip"
+            send "\n"
+
+            expect "Do you want to search for missing reverse zones"
+            send "yes\n"
+
+            expect "Continue to configure the system with these values"
+            send "yes\n"
+
+            expect "Continue to configure the system with these values"
+            send "yes\n"
+    args:
+            executable: /usr/bin/expect
+
+  - name: Running ipa-server-upgrade
+    shell: |
+            ipa-server-upgrade
+    args:
+            executable: /bin/bash
 
   - name: Running commands for centralServer
     shell: |
@@ -74,19 +147,8 @@
             nmcli connection up "System eth1"
     args:
             executable: /bin/bash
-  gather_facts: yes
-  user: root
-  roles:
-          - ansible-freeipa/roles/ipaserver
-  vars:
-          ipaserver_domain: otus.lan
-          ipaserver_realm: OTUS.LAN
-          ipaadmin_password: OtusSecretPass
-          ipadm_password: OtusSecretPass
-          ipaserver_setup_dns: yes
-          ipaserver_auto_forwarders: yes
 
-- hosts: office1Router
+- hosts: office1router.otus.lan
   become: yes
   tasks:
   - name: Installing libselinux-python
@@ -115,7 +177,7 @@
     args:
             executable: /bin/bash
             
-- hosts: office1Server
+- hosts: office1server.otus.lan
   become: yes
   tasks:
   - name: Running commands for office1Server
@@ -128,7 +190,7 @@
     args:
             executable: /bin/bash
             
-- hosts: office2Router
+- hosts: office2router.otus.lan
   become: yes
   tasks:
   - name: Installing libselinux-python
@@ -157,7 +219,7 @@
     args:
             executable: /bin/bash
             
-- hosts: office2Server
+- hosts: office2server.otus.lan
   become: yes
   tasks:
   - name: Running commands for office2Server
