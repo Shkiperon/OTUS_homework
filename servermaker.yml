@@ -1,5 +1,0 @@
-- name: ServerMaker
-  hosts: all
-  become: true
-  roles:
-          - servermaker

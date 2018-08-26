@@ -2,9 +2,13 @@
 # vim: set ft=ruby :
 
 MACHINES = {
- :centralServer => {
+ :web => {
         :box_name => "centos/7",
         :ip_addr => '192.168.0.2'
+  },
+  :log => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.0.3'
   },
 }
 
