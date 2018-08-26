@@ -1,0 +1,15 @@
+---
+- name: Starting atop
+  service:
+    name: atop
+    state: restarted
+    enabled: yes
+
+- name: Starting ntpd
+  service:
+    name: ntpd
+    state: restarted
+    enabled: yes
+
+- name: Reloading systemctl parameters
+  command: sysctl -p

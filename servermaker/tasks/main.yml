@@ -1,0 +1,56 @@
+---
+- name: Install updates
+  yum:
+          name: '*'
+          state: latest
+  tags:
+          - el7
+          - install
+
+- name: Install epel
+  yum:
+          name: epel-release
+          state: latest
+  tags:
+          - epel
+
+- name: Install common packages
+  yum:
+          name: "{{ item }}" 
+          state: latest
+  with_items: "{{ soft_list }}"
+  tags:
+          - soft
+
+- name: Updating atop configuration
+  template:
+          src: atop.base
+          dest: /etc/sysconfig/atop
+  tags:
+          - atop
+  notify:
+          - Starting atop
+
+- name: Updating ntpd configuration
+  template:
+          src: ntp.base
+          dest: /etc/ntp.conf
+  tags:
+          - ntpd
+  notify:
+          - Starting ntpd
+  
+- name: Set timezone to YEKT
+  timezone:
+          name: Asia/Yekaterinburg
+  tags:
+          - timezone
+
+- name: Updating systemctl configuration
+  template:
+          src: sysctl.base
+          dest: /etc/sysctl.conf
+  tags:
+          - sysctl
+  notify:
+          - Reloading systemctl parameters
